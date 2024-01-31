@@ -1,4 +1,6 @@
-const Matches = ({countries, search}) => {
+import MatchLine from "./MatchLine";
+
+const Matches = ({countries, search, handleShow}) => {
     return (
         <div>
             {
@@ -6,16 +8,12 @@ const Matches = ({countries, search}) => {
                 <ul>
                     {
                         countries
-                        .map(match => {
-                            const common = match.name.common
-                            const official = match.name.official
-                            const keyID = common.toLowerCase();
-                            return(
-                                common.toLowerCase().includes(search.toLowerCase())?
-                                <li key={keyID}>{common}</li>
-                                :<li key={keyID}>{official}</li>
-                            )
-                        })
+                        .map(match =><MatchLine 
+                                    key={match.name.common} 
+                                    match={match} 
+                                    search={search}
+                                    handleShow={handleShow}/>
+                        )
                     }
                 </ul>
                 : <p>Too many matches, specify another filter</p>

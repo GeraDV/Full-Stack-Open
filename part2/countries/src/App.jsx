@@ -42,12 +42,18 @@ function App() {
     setSearch(event.target.value)
   }
 
+  const handleShow = (country) => {
+    setSearch(country.name.common)
+    setCountries([country]);
+  }
+
   return (
     <div>
-      <Search value={search} handleSearch={handleSearch}/>
+      {/* <Search value={search} handleSearch={handleSearch}/> */}
+      <div>find countries <input value={search} onChange={handleSearch}/></div>
       {country?
         <Country country={country}/>
-        :<Matches countries={countries} search={search}/>
+        :<Matches countries={countries} search={search} handleShow={handleShow}/>
       }
     </div>
   )
