@@ -1,33 +1,30 @@
 import { useState, useEffect } from 'react'
-import countrieService from './services/countries'
+import countryService from './services/countries'
 import Country from './components/Country'
 import Matches from './components/Matches'
 
-const Search = ({text, handleSearch}) => {
-  return (
-    <div>
-      find countries <input value={text} onChange={handleSearch}/>
-    </div>
-  )
+const Search = () => {
+
 }
 
 function App() {
   const [countries, setCountries] = useState([]);
   const [search, setSearch] = useState('');
-  const [country, setCountry] = useState()
+  const [country, setCountry] = useState();
+  const [matches, setMatches] = useState([]);
+
+  useEffect(() => {
+    countryService
+      .getAll()
+      .then(res => {
+        setCountries(res);
+      })
+  }, [])
 
   useEffect(()=>{
-    if(search){
-      countrieService
-        .getMatches(search)
-        .then(res => setCountries(res))
-    }
-  }, [search])
-
-  useEffect(()=>{
-    if(countries.length===1){
-      const name = countries[0].name.common.toLowerCase();
-      countrieService
+    if(matches.length===1){
+      const name = matches[0].name.common.toLowerCase();
+      countryService
         .getCountry(name)
         .then(res => {
           setCountry(res)
@@ -35,25 +32,41 @@ function App() {
     }else{
       setCountry();
     }
-  },[countries])
+  },[matches])
 
 
   const handleSearch = (event) => {
-    setSearch(event.target.value)
+    const name = event.target.value
+    setSearch(name)
+    const listMatches = 
+    countries.filter(country => {
+      const common = country.name.common.toLowerCase()
+      const official = country.name.official.toLowerCase()
+      return (
+          common.includes(name.toLowerCase())
+          || official.includes(name.toLowerCase())
+      )
+    })
+    setMatches(listMatches)
   }
 
   const handleShow = (country) => {
+    console.log([country]);
     setSearch(country.name.common)
-    setCountries([country]);
+    setMatches([country])
   }
 
   return (
     <div>
-      {/* <Search value={search} handleSearch={handleSearch}/> */}
-      <div>find countries <input value={search} onChange={handleSearch}/></div>
-      {country?
-        <Country country={country}/>
-        :<Matches countries={countries} search={search} handleShow={handleShow}/>
+      {countries.length===0?
+        <p>Loading countries...</p>
+        :<div>
+          <div>find countries <input value={search} onChange={handleSearch}/></div>
+          {country?
+            <Country country={country}/>
+            :<Matches matches={matches} search={search} handleShow={handleShow}/>
+          }
+        </div>
       }
     </div>
   )

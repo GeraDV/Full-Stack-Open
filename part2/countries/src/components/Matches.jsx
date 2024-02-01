@@ -1,13 +1,14 @@
 import MatchLine from "./MatchLine";
 
-const Matches = ({countries, search, handleShow}) => {
+const Matches = ({matches, search, handleShow}) => {
     return (
         <div>
             {
-                countries.length>0 && countries.length<=10? 
-                <ul>
+                matches.length>10? 
+                <p>Too many matches, specify another filter</p>
+                :<ul>
                     {
-                        countries
+                        matches
                         .map(match =><MatchLine 
                                     key={match.name.common} 
                                     match={match} 
@@ -16,7 +17,6 @@ const Matches = ({countries, search, handleShow}) => {
                         )
                     }
                 </ul>
-                : <p>Too many matches, specify another filter</p>
             }
         </div>
     )

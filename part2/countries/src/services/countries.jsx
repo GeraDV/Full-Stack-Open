@@ -2,25 +2,14 @@ import axios from 'axios';
 
 const baseURL = 'https://studies.cs.helsinki.fi/restcountries/api'
 
-const getMatches = (filter) => {
-    const match = filter.toLowerCase();
+const getAll = () => {
     return (
         axios
         .get(`${baseURL}/all`)
-        .then(res => {
-            return (
-                res.data.filter(country => {
-                    const common = country.name.common.toLowerCase()
-                    const official = country.name.official.toLowerCase()
-                    return (
-                        common.includes(match)
-                        || official.includes(match)
-                    )
-                })
-            )
-        })
+        .then(res => res.data)
     )
 }
+
 
 const getCountry = (name) => {
     return (
@@ -30,4 +19,4 @@ const getCountry = (name) => {
     )
 }
 
-export default {getMatches, getCountry}
+export default {getAll, getCountry}
