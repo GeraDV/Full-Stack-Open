@@ -3,10 +3,6 @@ import countryService from './services/countries'
 import Country from './components/Country'
 import Matches from './components/Matches'
 
-const Search = () => {
-
-}
-
 function App() {
   const [countries, setCountries] = useState([]);
   const [search, setSearch] = useState('');

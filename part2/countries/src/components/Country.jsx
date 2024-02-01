@@ -1,5 +1,7 @@
-const Country = ({country}) => {
+import Weather from './Weather'
 
+const Country = ({country}) => {
+    console.log('Country: ', country);
     const flagStyle = {
         height:'auto',
         width:'120px'
@@ -19,6 +21,8 @@ const Country = ({country}) => {
                     .map(lang => <li key={lang}>{lang}</li>)}
             </ul>
             <img style={flagStyle} src={country.flags.svg} alt={country.flags.alt} />
+
+            <Weather country={country}/>
         </div>
     )
 }
