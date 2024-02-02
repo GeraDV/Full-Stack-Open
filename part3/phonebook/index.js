@@ -13,6 +13,7 @@ morgan.token('person', (req) => {
 //MIDDLEWARES
 app.use(cors())
 app.use(express.json())
+app.use(express.static('dist'))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
 
 let persons = [
@@ -39,7 +40,7 @@ let persons = [
 ]
 
 app.get('/', (req, res) => {
-    res.send('<h2>Hello from backend API </h2>')
+    res.send('<h2>Backend say: 404 not Found</h2>')
 })
 
 app.get('/info', (req, res) => {
@@ -96,7 +97,7 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Start in Port ${PORT} --------------------->`);
 })
