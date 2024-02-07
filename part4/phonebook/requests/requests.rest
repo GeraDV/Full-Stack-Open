@@ -1,0 +1,61 @@
+GET http://localhost:3001/api/persons HTTP/1.1
+Content-Type: application/json
+
+###
+
+GET http://localhost:3001/api/persons/65bd726623ed57106f73bfc8 HTTP/1.1
+Content-Type: application/json
+
+
+###
+
+DELETE http://localhost:3001/api/persons/65bd6751179fe0f2ffd5ec7c HTTP/1.1
+
+###
+
+PUT http://localhost:3001/api/persons/65bd7234e48b63b86e3c0ca1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "El Pepe",
+    "number": "15-55983652"
+}
+
+###
+
+POST http://localhost:3001/api/persons  HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "GeraDV",
+    "number": "11-2233-4455"
+}
+
+###
+
+POST http://localhost:3001/api/persons  HTTP/1.1
+Content-Type: application/json
+
+{
+    "number": "11-1234-5678"
+}
+
+###
+
+POST http://localhost:3001/api/persons  HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Alfred"
+}
+
+###
+
+POST http://localhost:3001/api/persons  HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Ada Lovelace",
+    "number": "11-2233-4455"
+}
+
