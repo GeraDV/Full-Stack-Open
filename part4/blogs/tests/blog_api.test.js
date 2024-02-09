@@ -129,6 +129,29 @@ describe('POST/api', () => {
     expect(allBlogs).toHaveLength(initialBlogs.length)
   })
 
+  test('If the "likes" field is not defined, it will start with 0 likes', async () => {
+    await Blog.deleteMany({})
+
+    const blog = {
+      title: "Software Testing",
+      author: "Ana Lopez",
+      url: "https://blog/testing"
+    }
+
+    await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(201)  //Created
+    .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(1)
+
+    const addedBlog = response.body[0]
+    expect(addedBlog).toHaveProperty('likes')
+    expect(addedBlog.likes).toBe(0)
+  })
+
 })
 
 afterAll(() => {

@@ -10,29 +10,34 @@ blogsRouter.get('/', async (request, response, next) => {
   }
 })
 
-blogsRouter.get('/:id', (request, response, next) => {
-  const blogID = request.params.id
-  Blog
-    .findById(blogID)
-    .then(blog => {
-      if(blog){
-        response.status(200).json(blog)
-      } else {
-        response.status(400).send({error: 'resourse not found'})
-      }
-    })
-    .catch(error => next(error))
+blogsRouter.get('/:id', async (request, response, next) => {
+  try{
+    const blogID = request.params.id
+    const blog = await Blog.findById(blogID)
+    if(blog){
+      response.status(200).json(blog)
+    } else {
+      response.status(400).send({error: 'resourse not found'})
+    }
+  }catch(exception){
+    next(exception)
+  }
 })
 
-blogsRouter.post('/', (request, response, next) => {
-  const blog = new Blog(request.body)
-
-  blog
-    .save()
-    .then(result => {
-      response.status(201).json(result)
+blogsRouter.post('/', async (request, response, next) => {
+  try{
+    const body = request.body
+    const blog = new Blog({
+      title: body.title,
+      url: body.url,
+      author: body.author || 'unknown',
+      likes: body.likes || 0
     })
-    .catch(error => next(error))
+    const result = await blog.save()
+    response.status(201).json(result)
+  }catch(exception){
+    next(exception)
+  }
 })
 
 blogsRouter.delete('/:id', (request, response, next) => {
