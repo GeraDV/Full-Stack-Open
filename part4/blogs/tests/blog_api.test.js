@@ -67,12 +67,68 @@ describe('GET/api', () => {
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/)
-  }, 100000)
+  })
 
   test('The correct number of blogs', async () => {
     const res = await api.get('/api/blogs')
     expect(res.body).toHaveLength(initialBlogs.length)
-  }, 100000)
+  })
+
+  test('The field "_id" is returned as "id"', async () => {
+    const allBlogs = await api.get('/api/blogs')
+    const anyBlog = allBlogs.body[0]
+    expect(anyBlog).toHaveProperty('id')
+  })
+})
+
+describe('POST/api', () => {
+  test('a valid blog can be added', async () => {
+    const blog = {
+      title: "Software Testing",
+      author: "Ana Lopez",
+      url: "https://blog/testing",
+      likes: 20
+    }
+
+    await api
+    .post('/api/blogs')
+    .send(blog)
+    .expect(201)  //Created
+    .expect('Content-Type', /application\/json/)
+
+    const response = await api.get('/api/blogs')
+    const allBlogs = response.body
+    expect(allBlogs).toHaveLength(initialBlogs.length+1)
+
+    const titles = allBlogs.map(blog => blog.title)
+    expect(titles).toContain('Software Testing')
+  })
+
+  test('a blog without url or title is not added', async () => {
+    const blogWithoutTitle = {
+      author: "Ana Lopez",
+      url: "https://blog/testing"
+    }
+    const blogWithoutUrl = {
+      title: "Software Testing",
+      author: "Ana Lopez"
+    }
+
+    await api
+    .post('/api/blogs')
+    .send(blogWithoutTitle)
+    .expect(400)  //Bad Request
+    
+    await api
+    .post('/api/blogs')
+    .send(blogWithoutUrl)
+    .expect(400)  //Bad Request
+
+    const response = await api.get('/api/blogs')
+    const allBlogs = response.body
+    expect(allBlogs).toHaveLength(initialBlogs.length)
+  })
+
 })
 
 afterAll(() => {
