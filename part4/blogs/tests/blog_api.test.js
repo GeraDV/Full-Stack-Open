@@ -2,50 +2,11 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blogs')
+const helper = require('./test_helper.js')
 
 const api = supertest(app)
 
-const initialBlogs = [
-  {
-    title: "Introducción a JavaScript",
-    author: "Juan Pérez",
-    url: "https://blog/javascript",
-    likes: 20
-  },
-  {
-    title: "Desarrollo web con React",
-    author: "Richard Nilson",
-    url: "https://blog/react",
-    likes: 35
-  },
-  {
-    title: "Python para principiantes",
-    author: "Fito Paez",
-    url: "https://blog/python",
-    likes: 15
-  },
-  {
-    title: "Introducción a Node.js",
-    author: "Laura Sánchez",
-    url: "https://blog/nodejs",
-  },
-  {
-    title: "Programación orientada a objetos",
-    author: "Boogie",
-    url: "https://blog/oop",
-    likes: 30
-  },
-  {
-    title: "Diseño de interfaces de usuario",
-    author: "Ana Lopez",
-    url: "https://blog/ui-design",
-    likes: 25
-  },
-  {
-    title: "Algoritmos y estructuras de datos",
-    url: "https://blog/algorithms",
-  }
-]
+const initialBlogs = helper.initialBlogs
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -79,6 +40,29 @@ describe('GET/api', () => {
     const anyBlog = allBlogs.body[0]
     expect(anyBlog).toHaveProperty('id')
   })
+
+  test('succeeds with a valid id', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+
+    const blogToView = blogsAtStart[0]
+
+    const resultBlog = await api
+      .get(`/api/blogs/${blogToView.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const processedBlogToView = JSON.parse(JSON.stringify(blogToView))
+
+    expect(resultBlog.body).toEqual(processedBlogToView)
+  })
+
+  test('fails with 404 if blog not exist', async () => {
+    const validNonExistingId = await helper.nonExistingId()
+
+    await api
+      .get(`/api/blogs/${validNonExistingId}`)
+      .expect(404)
+  })
 })
 
 describe('POST/api', () => {
@@ -96,8 +80,7 @@ describe('POST/api', () => {
     .expect(201)  //Created
     .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-    const allBlogs = response.body
+    const allBlogs = await helper.blogsInDb()
     expect(allBlogs).toHaveLength(initialBlogs.length+1)
 
     const titles = allBlogs.map(blog => blog.title)
@@ -124,8 +107,7 @@ describe('POST/api', () => {
     .send(blogWithoutUrl)
     .expect(400)  //Bad Request
 
-    const response = await api.get('/api/blogs')
-    const allBlogs = response.body
+    const allBlogs = await helper.blogsInDb()
     expect(allBlogs).toHaveLength(initialBlogs.length)
   })
 
@@ -152,6 +134,45 @@ describe('POST/api', () => {
     expect(addedBlog.likes).toBe(0)
   })
 
+})
+
+describe('DELETE/api', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length - 1)
+
+    const titles = blogsAtEnd.map(b => b.title)
+    expect(titles).not.toContain(blogToDelete.title)
+  })
+})
+
+describe('PUT/api', () => {
+  test('succeeds with status 201 if blog id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const newLikes = 88
+
+    const changes = {
+      likes: newLikes
+    }
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(changes)
+      .expect(201)
+
+    const blogAtEnd = await api.get(`/api/blogs/${blogToUpdate.id}`)
+    expect(blogAtEnd.body.likes).toEqual(newLikes)
+  })
 })
 
 afterAll(() => {

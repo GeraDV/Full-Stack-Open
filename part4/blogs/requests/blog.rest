@@ -28,7 +28,7 @@ GET http://localhost:3003/api/blogs/65c46c4eaf894ce5bfbe2f69 HTTP/1.1
 
 
 ### Delete (id)
-DELETE http://localhost:3003/api/blogs/665c4790b62f40ba57fec2f76 HTTP/1.1
+DELETE http://localhost:3003/api/blogs/665c4790b62f40ba57fec2f75 HTTP/1.1
 
 
 ### Put (id)
